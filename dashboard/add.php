@@ -10,8 +10,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $location = $_POST['location'];
         $status = $_POST['status'];
         $date_created = $_POST['date_created'];
-        $image_path = $_POST['image_path'];
-
+        $image_path = $_FILES['image_path'];
+        // var_dump($image_path);
+        // die();
         $nouvelUtilisateur = new Job($conn);
 
         // Configurer les propriétés d'abord
@@ -45,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container">
 
     <!-- les informations qui j'entre seront sécurisés avec la methode poste -->
-     <form id="forms" method="POST" >
+     <form id="forms" method="POST" enctype="multipart/form-data">
                             <!-- 2 column grid layout with text inputs for the first and last names -->
                             <div class="row mb-4">
                               <div class="col">

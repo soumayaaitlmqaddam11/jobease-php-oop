@@ -2,7 +2,7 @@
 
 class Job
 {
-    private $conn;
+    public $conn;
     private $id;
     private $title;
     private $description;
@@ -107,6 +107,14 @@ class Job
 
     public function addArticle($title, $company, $description, $location, $status, $dateCreated, $imagePath)
     {
+        // var_dump($imagePath);
+        $folder = __DIR__."uploads/";
+        $uploadFileName = uniqid() . basename($imagePath['name']);
+        $target='C:/xampp/htdocs/OffreEmploi/uploads/';
+        $uploadFile = $target . $uploadFileName;
+        move_uploaded_file($imagePath['tmp_name'], $uploadFile);
+
+        $imagePathInDatabase = $uploadFileName;
         // Échappez les variables pour prévenir les attaques par injection SQL
         $title = $this->conn->real_escape_string($title);
         $company = $this->conn->real_escape_string($company);
@@ -114,11 +122,13 @@ class Job
         $location = $this->conn->real_escape_string($location);
         $status = $this->conn->real_escape_string($status);
         $dateCreated = $this->conn->real_escape_string($dateCreated);
-        $imagePath = $this->conn->real_escape_string($imagePath);
+        // $imagePath = $this->conn->real_escape_string($imagePath);
+        
+        $string = str_replace(' ','',$imagePathInDatabase); 
 
         // Requête SQL pour ajouter un nouvel article
         $sql = "INSERT INTO jobs (title, company, description, location, status, date_created, image_path)
-                VALUES ('$title', '$company', '$description', '$location', '$status', '$dateCreated', '$imagePath')";
+                VALUES ('$title', '$company', '$description', '$location', '$status', '$dateCreated', '$imagePathInDatabase')";
 
         // Exécutez la requête
         if ($this->conn->query($sql) === TRUE) {
@@ -186,6 +196,54 @@ class Job
     {
         $this->conn->close();
     }
+    public function getAllRowsOpen()
+{
+    $sql = "SELECT * FROM jobs";
+    $result = $this->conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $rows = array();
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return $rows;
+    } else {
+        return array();
+    }
+}
+public function getAllJob()
+{
+    $stmt = "SELECT * FROM job";
+    $result = $this->conn->query($stmt);
+    $allJob = [];
+    while ($row = $result->fetch_assoc()) {
+        $allJob[] = $row;
+    }
+    return $allJob;
+}
+public function search($alph)
+{
+    $stmt = "SELECT * FROM job where title like '%$alph%'";
+    $result = $this->conn->query($stmt);
+    $getalph = [];
+    while ($row = $result->fetch_assoc()) {
+        $getalph[] = $row;
+    }
+    return $getalph;
 }
 
+public function getJobId($id)
+{
+    $stmt = "SELECT * FROM job where id=$id";
+    $result = $this->conn->query($stmt);
+    $getalph = [];
+    while ($row = $result->fetch_assoc()) {
+        $getalph[] = $row;
+    }
+    return $getalph;
+}
+}
+
+
 ?>
+

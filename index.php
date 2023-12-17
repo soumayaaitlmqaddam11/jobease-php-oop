@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,10 +12,17 @@
 	</title>
 
 	<link rel="stylesheet" href="styles/style.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+		crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -43,7 +53,8 @@
 						</li>
 
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								language
 							</a>
 							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -55,16 +66,17 @@
 							<a class="nav-link" href="#">EN</a>
 						</span>
 						<li class="nav-item">
-							<a class="nav-link" href="login.php">Login</a>
+							<?php if (isset($_SESSION['id'])) { ?>
+								<a class="nav-link" href="logout.php">Logout</a>
+							<?php } else { ?>
+								<a class="nav-link" href="login.php">Login</a>
+							<?php } ?>
 						</li>
 					</ul>
 				</div>
 			</div>
 		</nav>
 	</header>
-
-
-
 
 	<section action="#" method="get" class="search">
 		<h2>Find Your Dream Job</h2>
@@ -80,28 +92,49 @@
 			<div class="form-group mx-sm-3 mb-2">
 				<input type="text" name="company" placeholder="Company">
 			</div>
-			<button type="submit" class="btn btn-primary mb-2">Search</button>
+			<button type="submit" onclick="filterjob()" class="btn btn-primary mb-2">Search</button>
 		</form>
 	</section>
 
 	<!--------------------------  card  --------------------->
+	<?php
+
+	?>
 	<section class="light">
 		<h2 class="text-center py-3">Latest Job Listings</h2>
 		<div class="container py-2">
+			<?php
+			include('dashboard/job.php');
+			include('database.php');
 
+			$offreQuery = new Job($conn);
+			$allOffres = $offreQuery->getAllRowsOpen();
+
+			foreach ($allOffres as $offre): {
+					?>
+					
 			<article class="postcard light green">
 				<a class="postcard__img_link" href="#">
-					<img class="postcard__img" src="https://picsum.photos/300/300" alt="Image Title" />
+					<?php
+					$imagePath = "uploads/" . $offre['image_path'];
+					?>
+					<img class="postcard__img" src="<?php echo $imagePath; ?>" alt="Image Title" />
 				</a>
 				<div class="postcard__text t-dark">
-					<h3 class="postcard__title green"><a href="#">Experienced Web Developer in Python .</a></h3>
+					<h3 class="postcard__title green">
+						<a href="#">
+							<?php echo $offre['title']; ?>
+						</a></h3>
 					<div class="postcard__subtitle small">
 						<time datetime="2020-05-25 12:00:00">
-							<i class="fas fa-calendar-alt mr-2"></i>Mon, May 26th 2023
+							<i class="fas fa-calendar-alt mr-2"></i>
+							<?php echo $offre['description']; ?>
 						</time>
 					</div>
 					<div class="postcard__bar"></div>
-					<div class="postcard__preview-txt">Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi, fugiat asperiores inventore beatae accusamus odit minima enim,!</div>
+					<div class="postcard__preview-txt">
+						<?php echo $offre['location']; ?>
+					</div>
 					<ul class="postcard__tagbox">
 						<li class="tag__item"><i class="fas fa-tag mr-2"></i>Maroc</li>
 						<li class="tag__item"><i class="fas fa-clock mr-2"></i>55 mins.</li>
@@ -111,34 +144,17 @@
 					</ul>
 				</div>
 			</article>
-			<article class="postcard light yellow">
-				<a class="postcard__img_link" href="#">
-					<img class="postcard__img" src="https://picsum.photos/300/300" alt="Image Title" />
-				</a>
-				<div class="postcard__text t-dark">
-					<h3 class="postcard__title yellow"><a href="#">Web Designer / Developer</a></h3>
-					<div class="postcard__subtitle small">
-						<time datetime="2020-05-25 12:00:00">
-							<i class="fas fa-calendar-alt mr-2"></i>Mon, May 25th 2023
-						</time>
-					</div>
-					<div class="postcard__bar"></div>
-					<div class="postcard__preview-txt">Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi, fugiat asperiores inventore beatae accusamus odit minima enim,!</div>
-					<ul class="postcard__tagbox">
-						<li class="tag__item"><i class="fas fa-tag mr-2"></i>France</li>
-						<li class="tag__item"><i class="fas fa-clock mr-2"></i> 3 mins.</li>
-						<li class="tag__item play yellow">
-							<a href="#"><i class="fas fa-play mr-2"></i>APPLY NOW</a>
-						</li>
-					</ul>
-				</div>
-			</article>
+			<?php
+				}
+			endforeach;
+			?>
+
 		</div>
 	</section>
 
-	
 
 
+ 
 	<footer>
 		<p>© 2023 JobEase </p>
 	</footer>

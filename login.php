@@ -19,7 +19,7 @@ class UserLogin {
             $row = $result->fetch_assoc();
             if (password_verify($password, $row['password'])) {
                 session_start();
-                $_SESSION['email'] = $email;
+                $_SESSION['id'] = $row['id'];
                 $_SESSION['role_name'] = $row['role_name'];
                if ($row['role_name'] == "admin") {
                 header("location: dashboard/dashboard.php");
